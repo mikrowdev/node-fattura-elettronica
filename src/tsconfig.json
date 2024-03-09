@@ -1,0 +1,11 @@
+{
+    "extends": "../tsconfig.base.json",
+    "compilerOptions": {
+      "baseUrl": "./",
+      "allowJs": true,
+      "resolveJsonModule": true
+    },
+    "exclude": [ "**/test.ts", "build" ],
+    "include": [ ".","../@types","../package.json"],  
+  }
+  

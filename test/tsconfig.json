@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@node-fatturazione-elettronica": ["../src"],
+      "@node-fatturazione-elettronica/*": ["../src/*"]
+    }
+  },
+  "include": ["."]
+}
