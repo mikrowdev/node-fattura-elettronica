@@ -4,6 +4,8 @@ import { TipoCassa } from './tipo_cassa';
 import { NaturaAliquotaZero } from './natura_aliquota_zero';
 import { Sede } from './fattura_header';
 import { BaseDatiAnagrafici } from './fattura_header';
+import { TipoPagamento } from './tipo_pagamento';
+import { MetodiPagamento } from './modalita_pagamento';
 interface DatiRitenuta {
   tipoRitenuta: TipoRitenuta;
   /**
@@ -432,8 +434,234 @@ interface DettaglioLinea {
   altriDatiGestionali?: AltriDatiGestionali[];
 }
 
-interface DatiBeniServizi {}
+interface DatiRiepilogo {
+  /**
+   * importo del aliquota iva, valori decimali separati dal punto '.'
+   */
+  percentualeAliquotaIVA: number;
+  /**
+   * nei casi di aliquota IVA pari a 0
+   */
+  natura?: NaturaAliquotaZero;
+  /**
+   * riepilogo degli importi di spese accessorie indicate nelle righe
+   * di dettaglio linea tipoCessionePrestazione uguale a 'AC', tale importo
+   * rappresenta una parte dell'ammontare contenuto nell'elemento
+   * imponibileImporto, decimali espressi con il punto '.'
+   */
+  speseAccessorie?: number;
+  /**
+   * importo dell'arrotondamento eventualmente applicato alle somme
+   * dei dati di dettaglio per riportarle al centesimo di euro, come
+   * espresse nell'elemento imponibileImporto, decimali espressi con
+   * il punto '.'
+   */
+  arrotondamento?: number;
+  /**
+   * Importo totale della fornitura IVA esclusa
+   */
+  imponibileImporto: number;
+  /**
+   * Imposta calcolata con l'applicazione dell'aliquota IVA sul relativo
+   * imponibile.
+   */
+  imposta: number;
+  /**
+   * Tramite relativo codice si specifica il regime di esigibilità IVA
+   * (differita o immediata) o la modalità di versamento dell'imposta
+   * (scissione pagamenti). valori ammessi:
+   * D: Esigibilità differita
+   * I: Esigibilità immediata
+   * S: Sciossione dei pagamenti
+   */
+  esigibilitaIVA?: 'D' | 'I' | 'S';
+  /**
+   * Deve essere riportata la norma di riferimento
+   * nei casi in cui natura sia valorizzata
+   */
+  riferimentoNormativo?: string;
+}
+
+interface DatiBeniServizi {
+  dettaglioLinea: DettaglioLinea[];
+  datiRiepilogo: DatiRiepilogo[];
+}
+
+interface DatiVeicoli {
+  /**
+   * data della prima immatricolazione o
+   * dell'iscrizione nei pubblici registri ISO 8601:2004
+   */
+  data: Date;
+  /**
+   * Totale dei chilometri percorsi, oppure totale delle ore di
+   * navigazione o di volo
+   */
+  totalePercorso: string;
+}
+interface DettaglioPagamento {
+  /**
+   * caso il beneficiario sia diverso dal fornitore
+   * (cedente/prestatore), occorre valorizzarlo
+   */
+  beneficiario?: string;
+  /**
+   * Tramite relativo codice che inizia con "MP"
+   * viene espressa la modalità del pagamento.
+   */
+  modalitaPagamento: MetodiPagamento;
+  /**
+   * La data a partire dalla quale decorrono i
+   * termini di pagamento. ISO 8601:2004
+   */
+  dataRiferimentoTerminiPagamento?: Date;
+  /**
+   * giorni che intercorrono a partire dal valore
+   * in dataRiferimentoTerminiPagamento fino
+   * alla scadenza del pagamento, che equivalgono
+   * a zero per pagamenti "pronti".
+   */
+  giorniTerminiPagamento?: number;
+  /**
+   * Data della scadenza del pagamento, ovvero la
+   * data in cui il pagamento diventa dovuto
+   * ISO 8601:2004
+   */
+  dataScadenzaPagamento?: Date;
+  /**
+   * Importo di cui si richiede il pagamento
+   */
+  importoPagamento: number;
+  /**
+   * Da indicare nel caso in cui l'espletamento
+   * del pagamento necessita di questa informazione
+   */
+  codUfficioPostale: string;
+  /**
+   * Nel caso il campo @param modalitaPagamento riporti
+   * il valore "MP4", questo nodo va valorizzato
+   * inserendo il cognome del quietanzante.
+   */
+  cognomeQuietanzante?: string;
+  /**
+   * Nel caso il campo @param modalitaPagamento riporti
+   * il valore "MP4", questo nodo va valorizzato
+   * inserendo il nome del quietanzante.
+   */
+  nomeQuietanzante?: string;
+  /**
+   * Nel caso il campo @param modalitaPagamento riporti
+   * il valore "MP4", questo nodo va valorizzato
+   * inserendo il codice fiscale del quietanzante.
+   */
+  cfQuietanzante?: string;
+  /**
+   * Nel caso il campo @param modalitaPagamento riporti
+   * il valore "MP4", questo nodo va valorizzato
+   * inserendo il titolo del quietanzante.
+   */
+  titoloQuietanzante?: string;
+  /**
+   * Nome della banca o dell'istituto finanziario
+   * attraverso il quale si appoggia il pagamento.
+   */
+  istitutoFinanziario?: string;
+  /**
+   * IBAN del conto attraverso il quale si appoggia
+   * il pagamento.
+   */
+  IBAN?: string;
+  /**
+   * Codice ABI dell'istituto finanziario
+   */
+  ABI?: string;
+  /**
+   * Codice CAB dell'istituto finanziario
+   */
+  CAB?: string;
+  /**
+   * Codice BIC (Bank Identifier Code)
+   * dell'istituto finanziario.
+   */
+  BIC?: string;
+  /**
+   * Importo dell'eventuale sconto concesso
+   * al cliente in caso di pagamento anticipato
+   */
+  scontoPagamentoAnticipato?: number;
+  /**
+   * Data che identifica la fine del periodo
+   * entro il quale il fornitore può concedere
+   * lo sconto per pagamento anticipato.
+   * ISO 8601:2004
+   */
+  dataLimitePagamentoAnticipato?: Date;
+  /**
+   * Eventuale importo che identifica la penale
+   * dovuta dal cliente in caso di ritardato
+   * pagamento.
+   */
+  penalitaPagamentiRitardati?: number;
+  /**
+   * Eventuale data che identifica la decorrenza
+   * della penale dovuta dal cliente in caso di
+   * ritardato pagamento.
+   * ISO 8601:2004
+   */
+  dataDecorrenzaPenale?: Date;
+  /**
+   * Eventuale codice in uso dal fornitore
+   * (cedente/prestatore) per la riconciliazione
+   * degli incassi
+   */
+  codicePagamento?: string;
+}
+
+interface DatiPagamento {
+  /**
+   * Tramite relativo codice che inizia con "TP" possiamo
+   * specificare se il pagamento è a rate, o in un unica soluzione,
+   * oppure è anticipato.
+   */
+  condizioniPagamento: TipoPagamento;
+  /**
+   * dettagli relativi alle condizioni di
+   * pagamento
+   */
+  dettaglioPagamento: DettaglioPagamento[];
+}
+
+interface Allegati {
+  /**
+   * Nome del file allegato completo di estensione.
+   */
+  nomeAttachment: string;
+  /**
+   * L'algoritmo utilizzato per comprimere il
+   * file (ZIP, RAR etc).
+   */
+  algoritmoCompressione?: string;
+  /**
+   * Formato dell'allegato da trascrivere
+   * utilizzando la sua meglio nota estensione
+   * (pdf, html, txt).
+   */
+  formatoAttachment?: string;
+  /**
+   * Descrizione del documento allegato.
+   */
+  descrizioneAttachment?: string;
+  /**
+   * Lo valorizziamo con il file desiderato
+   * preventivamente convertito in formato base64.
+   */
+  base64Attachment: string;
+}
 
 interface FatturaElettronicaBody {
   datiGenerali: DatiGenerali;
+  datiBeniServizi: DatiBeniServizi;
+  datiVeicolo?: DatiVeicoli;
+  datiPagamento?: DatiPagamento[];
+  allegati?: Allegati[];
 }
