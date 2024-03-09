@@ -1,15 +1,6 @@
-interface IDFiscaleIVA {
-  /**
-   * codice nazione ISO 3166-1 alpha-2 code
-   */
-  idPaese: string;
-  /**
-   * codice identificativo fiscale
-   */
-  idCodice: string;
-}
+import { AnagraficaBase, CommonHeaders, CommonsDatiTrasmissione, IdentificativiFiscali, IDFiscaleIVA, RappresentanteFiscaleBase, REA } from "./commons_headers";
 
-enum FormatoTrasmissione {
+enum FormatoTrasmissioneFatturaOrdinaria {
   /**
    * fatture verso privati
    */
@@ -25,23 +16,7 @@ interface Contatti {
   fax?: string;
 }
 
-interface Anagrafica {
-  /**
-   * ditta denominazinoe o ragione sociale (ditta,impresa,società,ente)
-   * da valorizzare solo se non sono valorizzati gli elementi
-   * nome e cognome
-   */
-  denominazione?: string;
-  /**
-   * nome della persona fisica. Da valorizzare insieme a cognome
-   * e solo se non valorizzato denominazione
-   */
-  nome?: string;
-  /**
-   * cognome della persona fisica. Da valorizzare insieme a nome
-   * e solo se non valorizzato denominazione
-   */
-  cognome?: string;
+export interface AnagraficaCompleta extends AnagraficaBase {
   /**
    * titolo onorifico
    */
@@ -62,7 +37,7 @@ interface InfoAlbo {
 /**
  * Tipi di Regime Fiscale.
  */
-enum RegimeFiscale {
+enum RegimeFiscaleFatturaOrdinaria {
   /**
    * (Ordinario)
    */
@@ -164,37 +139,14 @@ export interface Sede {
   nazione: string;
 }
 
-interface REA {
-  /**
-   * sigla provincia: RM, MI, ...
-   */
-  provinciaUfficio?: string;
-  numeroREA?: string;
-  /**
-   * capitale sociale espresso in decimale con delimitatore '.'
-   */
-  capitaleSociale: number;
-  /**
-   * SU: socio unico
-   * SM: più soci
-   */
-  socioUnico: 'SU' | 'SM';
-  /**
-   * LS: in liquidazione
-   * LN: non in liquidazione
-   */
-  statoLiquidazione?: 'LS' | 'LN';
-}
-
-export interface BaseDatiAnagrafici {
+export interface BaseDatiAnagrafici extends Omit<IdentificativiFiscali, 'idFiscaleIVA'> {
   idFiscaleIVA: IDFiscaleIVA;
-  codiceFiscale?: string;
-  anagrafica: Anagrafica;
+  anagrafica: AnagraficaCompleta;
 }
 
 interface DatiAnagraficiPrestatore extends BaseDatiAnagrafici {
   infoAlbo?: InfoAlbo;
-  regimeFiscale: RegimeFiscale;
+  regimeFiscale: RegimeFiscaleFatturaOrdinaria;
 }
 
 type DatiAnagraficiCommittente = Partial<
@@ -213,31 +165,10 @@ interface CedentePrestatore {
    */
   riferimentoAmministrazione?: string;
 }
-
-interface DatiTrasmissione {
-  idTrasmittente: IDFiscaleIVA;
-  /**
-   * numero identificativo lato integratore, non ha impatto all'interno del sistema di interscambio
-   */
-  progressivoInvio: number;
-  formatoTrasmissione: FormatoTrasmissione;
-  /**
-   * codice di destinatario
-   * per le PA, lungo 6 caratteri corrispondenti
-   * al codice dell'ufficio di destinazione
-   * per privati, lungo 7 caratteri corrispondente
-   * al codice assegnato dal Sdi ai soggetti che hanno accreditato
-   * un canaale; qualora il destinatario non abbia accreditato un
-   * canale presso SdI deve essere valorizzato come tutti 0:
-   * '0000000'
-   *
-   */
-  codiceDestinatario: string;
-  contattiTrasmittente?: Contatti;
-  pecDestinatario?: string;
+interface DatiTrasmissioneFatturaOrdinaria extends CommonsDatiTrasmissione {
+  formatoTrasmissione: FormatoTrasmissioneFatturaOrdinaria;
 }
-
-interface RappresentanteFiscale {
+interface RappresentanteFiscaleCompleto {
   datiAnagrafici: BaseDatiAnagrafici;
 }
 
@@ -245,12 +176,7 @@ interface CessionarioCommittente {
   datiAnagrafici: DatiAnagraficiCommittente;
   sede: Sede;
   stabileOrganizzazione?: Sede;
-  rappresentanteFiscale?: {
-    idFiscaleIVA: IDFiscaleIVA;
-    denominazione?: string;
-    nome?: string;
-    cognome?: string;
-  };
+  rappresentanteFiscale?: RappresentanteFiscaleBase;
 }
 
 interface TerzoIntermediarioOSoggettoEmittente {
@@ -258,16 +184,10 @@ interface TerzoIntermediarioOSoggettoEmittente {
   datiAnagrafici: DatiAnagraficiCommittente;
 }
 
-interface FatturaElettronicaHeader {
-  datiTrasmissione: DatiTrasmissione;
+interface FatturaElettronicaHeader extends CommonHeaders {
+  datiTrasmissione: DatiTrasmissioneFatturaOrdinaria;
   cedentePrestatore: CedentePrestatore;
-  rappresentanteFiscale: RappresentanteFiscale;
+  rappresentanteFiscale: RappresentanteFiscaleCompleto;
   cessionario: CessionarioCommittente;
   terzoIntermediario: TerzoIntermediarioOSoggettoEmittente;
-  /**
-   * da valorizzare in tutti i casi in cui la fattura è emessa da un soggetto diverso da cedente/prestatore; indica se la fattura è emessa dal cessionario/committente oppure da un terzo per conto del cedente/prestatore
-   * CC: cessionario/committente
-   * TZ: terzo
-   */
-  soggettoEmittente: 'CC' | 'TZ';
 }
