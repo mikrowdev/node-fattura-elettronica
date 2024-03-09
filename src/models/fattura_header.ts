@@ -186,16 +186,24 @@ interface REA {
   statoLiquidazione?: 'LS' | 'LN';
 }
 
-interface DatiAnagrafici {
+interface BaseDatiAnagrafici {
   idFiscaleIVA: IDFiscaleIVA;
   codiceFiscale?: string;
   anagrafica: Anagrafica;
+}
+
+interface DatiAnagraficiPrestatore extends BaseDatiAnagrafici {
   infoAlbo?: InfoAlbo;
   regimeFiscale: RegimeFiscale;
 }
 
+type DatiAnagraficiCommittente = Partial<
+  Pick<BaseDatiAnagrafici, 'idFiscaleIVA'>
+> &
+  Omit<BaseDatiAnagrafici, 'idFiscaleIVA'>;
+
 interface CedentePrestatore {
-  datiAnagrafici: DatiAnagrafici;
+  datiAnagrafici: DatiAnagraficiPrestatore;
   sede: Sede;
   stabileOrganizzazione?: Sede;
   iscrizioneREA?: REA;
@@ -230,11 +238,25 @@ interface DatiTrasmissione {
 }
 
 interface RappresentanteFiscale {
-  datiAnagrafici: Omit<DatiAnagrafici, 'regimeFiscale' | 'infoAlbo'>;
+  datiAnagrafici: BaseDatiAnagrafici;
 }
 
 interface CessionarioCommittente {
-  datiAnagrafici: Omit<DatiAnagrafici, 'regimeFiscale' | 'infoAlbo'>;
+  datiAnagrafici: DatiAnagraficiCommittente;
+  sede: Sede;
+  stabileOrganizzazione?: Sede;
+  rappresentanteFiscale?: {
+    idFiscaleIVA: IDFiscaleIVA;
+    denominazione?: string;
+    nome?: string;
+    cognome?: string;
+  };
+}
+
+interface TerzoIntermediarioOSoggettoEmittente{
+  // TODO: rinominare DatiAnagraficiCommittente
+  datiAnagrafici: DatiAnagraficiCommittente;
+
 }
 
 interface FatturaElettronicaHeader {
@@ -242,4 +264,11 @@ interface FatturaElettronicaHeader {
   cedentePrestatore: CedentePrestatore;
   rappresentanteFiscale: RappresentanteFiscale;
   cessionario: CessionarioCommittente;
+  terzoIntermediario: TerzoIntermediarioOSoggettoEmittente;
+  /**
+   * da valorizzare in tutti i casi in cui la fattura è emessa da un soggetto diverso da cedente/prestatore; indica se la fattura è emessa dal cessionario/committente oppure da un terzo per conto del cedente/prestatore
+   * CC: cessionario/committente
+   * TZ: terzo
+   */
+  soggettoEmittente: 'CC' | 'TZ';
 }
