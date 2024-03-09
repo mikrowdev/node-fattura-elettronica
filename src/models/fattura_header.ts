@@ -137,7 +137,7 @@ enum RegimeFiscale {
   REGIME_FORFETTARIO = 'RF19',
 }
 
-interface Sede {
+export interface Sede {
   /**
    * indirizzo della sede, puo includere il numero civico
    */
@@ -186,7 +186,7 @@ interface REA {
   statoLiquidazione?: 'LS' | 'LN';
 }
 
-interface BaseDatiAnagrafici {
+export interface BaseDatiAnagrafici {
   idFiscaleIVA: IDFiscaleIVA;
   codiceFiscale?: string;
   anagrafica: Anagrafica;
@@ -253,10 +253,9 @@ interface CessionarioCommittente {
   };
 }
 
-interface TerzoIntermediarioOSoggettoEmittente{
+interface TerzoIntermediarioOSoggettoEmittente {
   // TODO: rinominare DatiAnagraficiCommittente
   datiAnagrafici: DatiAnagraficiCommittente;
-
 }
 
 interface FatturaElettronicaHeader {

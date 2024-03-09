@@ -2,7 +2,8 @@ import { TipoRitenuta } from './tipo_ritenuta';
 import { TipoDocumento } from './tipo_documento';
 import { TipoCassa } from './tipo_cassa';
 import { NaturaAliquotaZero } from './natura_aliquota_zero';
-
+import { Sede } from './fattura_header';
+import { BaseDatiAnagrafici } from './fattura_header';
 interface DatiRitenuta {
   tipoRitenuta: TipoRitenuta;
   /**
@@ -180,6 +181,84 @@ interface DatiDDT {
   riferimentoNumeroLinea?: number[];
 }
 
+interface DatiAnagraficitVettore extends BaseDatiAnagrafici {
+  /**
+   * numero identificativo della licenza di guida (es. numero patente)
+   */
+  numeroLicenzaGuida?: string;
+}
+
+interface DatiTrasporto {
+  /**
+   * blocco contenente i dati fiscali e anagrafici del vettore
+   */
+  datiAnagraficiVettore?: DatiAnagraficitVettore;
+  /**
+   * mezzo utilizzato per il trasporto
+   */
+  mezzoTrasporto?: string;
+  /**
+   * causale del trasporto
+   */
+  causaleTrasporto?: string;
+  /**
+   * numero dei colli trasportati
+   */
+  numeroColli?: number;
+  /**
+   * descrizione (natura,qualità,aspetto) relativi ai colli trasportati
+   */
+  descrizione?: string;
+  /**
+   * unità di misura riferita al peso della merce
+   */
+  unitaMisuraPeso?: string;
+  /**
+   * peso lordo della merce, decimali espressi con il punto '.'
+   */
+  pesoLordo?: number;
+  /**
+   * peso netto della merce, decimali espressi con il punto '.'
+   */
+  pesoNetto?: number;
+  /**
+   * data e ora del ritiro della merce in ISO 8601:2004
+   */
+  dataOraRitiro?: Date;
+  /**
+   * data di inizio dei trasporti ISO 8601:2004
+   */
+  dataInizioTrasporto?: Date;
+  /**
+   * codifica del termine di resa espresso secondo lo standard
+   * ICC-Camera di Commercio Internazionale (Incoterms)
+   * todo: aggiungere enum specifico https://it.wikipedia.org/wiki/Incoterms
+   */
+  tipoResa?: string;
+  /**
+   * dati dell'indirizzo di resa
+   */
+  indirizzoResa?: Sede;
+  /**
+   * data e ora della consegna della merce ISO 8601:2004
+   */
+  dataOraConsegna?: Date;
+}
+
+interface FatturaPrincipale {
+  /**
+   * numero della fattura relativa al trasporto di beni, da indicare
+   * sulle fatture emesse dagli autotrasportatori per usufruire
+   * delle agevolazioni in materia di registrazione e pagamento
+   * dell'IVA
+   */
+  numeroFatturaPrincipale: string;
+  /**
+   * data della fattura ISO 8601:2004
+   */
+  dataFatturaPrincipale: Date;
+}
+
 interface DatiGenerali {
   datiGeneraliDocumento: DatiGeneraliDocumento;
   datiOrdineAcquisto?: DatiOrdineAcquisto[];
@@ -215,6 +294,146 @@ interface DatiGenerali {
    * a più consegne e quindi a più documenti di trasporto)
    */
   datiDDT?: DatiDDT[];
+  /**
+   * blocco valorizzabile nel caso di fattura "accompagnata" per inserire
+   * informazioni relative al trasporto
+   */
+  datiTrasporto?: DatiTrasporto;
+  /**
+   * blocco da valorizzare nei casi di fatture per operazioni accessorie
+   * emesse dagli autotrasporatori per usufruire delle agevolazioni
+   * in materia di registrazione e pagamento dell'IVA
+   */
+  fatturaPrincipale?: FatturaPrincipale;
 }
 
-interface FatturaElettronicaBody {}
+interface CodiceArticolo {
+  /**
+   * indica la tipologia di codice articolo (per esempio,
+   * TARI,CPV,EAN,SSC,...)
+   */
+  codiceTipo: string;
+  /**
+   * indica il valore del codice e articolo corrispondente alla
+   * tipologia
+   */
+  codiceValore: string;
+}
+
+interface AltriDatiGestionali {
+  /**
+   * codice che identifica la tipologia di informazione
+   */
+  tipoDato: string;
+  /**
+   * elemento informativo in cui inserire un valore alfanumerico
+   * riferito a tipoDato
+   */
+  riferimentoTesto?: string;
+  /**
+   * elemento informativo in cui inserire un valore alfanumerico
+   * riferito a tipoDato, decimali espressi con il punto '.'
+   */
+  riferimentoNumero?: number;
+  /**
+   * elemento informativo in cui inserire una data riferita a tipoDato
+   * ISO 8601:2004
+   */
+  riferimentoData?: Date;
+}
+
+interface DettaglioLinea {
+  /**
+   * numero della riga di dettaglio del documento
+   */
+  numeroLinea: number;
+  /**
+   * da valorizzare nei soli casi in cui si voglia utilizzare
+   * la riga per rappresentare uno sconto/premio/abbuono ovvero
+   * una spesa accessoria, valori ammessi:
+   * SC: sconto
+   * PR: premio
+   * AB: abbuono
+   * AC: spesa accessoria
+   */
+  tipoCessionePrestazione?: 'SC' | 'PR' | 'AB' | 'AC';
+  /**
+   * eventuale codifica dell'articolo (la molteplicita N del blocco
+   * consente di gestire la presenza di più codifiche per ogni riga)
+   */
+  codiceArticolo?: CodiceArticolo[];
+  /**
+   * natura e qualità dell'oggetto della cessione/prestazione;
+   * può fare anche riferimento a cessioni/prestazioni già oggetto
+   * di un precedente documento emesse a titolo di anticipo/acconto
+   * nel qual caso il valore dell'elemento prezzoUnitario e prezzoTotale
+   * potranno essere valorizzati con segno negativo
+   */
+  descrizione: string;
+  /**
+   * dumero di unità cedute/erogate, i valori decimali espressi
+   * con il punto '.'
+   */
+  quantita: number;
+  /**
+   * unità di misura riferita alla quantità
+   */
+  unitaMisura?: string;
+  /**
+   * data iniziale del periodo di riferimento cui si riferisce
+   * l'eventuale servizio prestato ISO 8601:2004
+   */
+  dataInizioPeriodo?: Date;
+  /**
+   * data finlae del periodo di riferimento cui si riferisce
+   * l'eventuale servizio prestato ISO 8601:2004
+   */
+  dataFinePeriodo?: Date;
+  /**
+   * prezzo unitario dei bene/servizio; nel caso di beni ceduti a titolo
+   * di sconto, premio o abbuono, l'importo indicato
+   * rappresenta il valore normale, valori decimali espressi con il
+   * punto '.'
+   */
+  prezzoUnitario: number;
+  /**
+   * eventuale sconto o maggiorazione applicati al prezzo unitario
+   */
+  scontoMaggiorazione?: ScontoMaggiorazione[];
+  /**
+   * importo totale del bene/servizio (che tiene conto di eventuali
+   * sconti/maggiorazini applicati al prezzo unitario) IVA esclusa
+   * decimali espressi con il punto '.'
+   */
+  prezzoTotale: number;
+  /**
+   * aliquota % IVA applicata al bene/servizio, decimali espressi
+   * con il punto '.'
+   */
+  percentualeAliquotaIVA: number;
+  /**
+   * da valorizzare solo in caso di cessione/prestazione soggetta a ritenuta
+   * valore ammesso: SI
+   */
+  ritenuta?: 'SI';
+  /**
+   * nei casi di aliquota IVA pari a 0
+   */
+  natura?: NaturaAliquotaZero;
+  /**
+   * codice alfanumerico ai fini amministrativo-contabili
+   */
+  riferimentoAmministrazione?: string;
+  /**
+   * blocco che consente agli utenti di inserire, con riferimento ad
+   * una linea di dettaglio, informazioni utili ai fini amminsistrativi
+   * gestionali, etc..
+   */
+  altriDatiGestionali?: AltriDatiGestionali[];
+}
+
+interface DatiBeniServizi {}
+
+interface FatturaElettronicaBody {
+  datiGenerali: DatiGenerali;
+}
