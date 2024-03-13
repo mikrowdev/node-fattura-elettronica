@@ -1,4 +1,4 @@
-export enum TipoDocumento {
+export enum TipoDocumentoFatturaOrdinaria {
   /**
    * fattura
    */
@@ -75,4 +75,19 @@ export enum TipoDocumento {
    * cquisti da San Marino con IVA (fattura cartacea)
    */
   ACQUISTI_DA_SAN_MARINO_CON_IVA = 'TD28',
+}
+
+export enum TipoDocumentoFatturaSemplificata {
+  /**
+   * fattura semplificata
+   */
+  FATTURA_SEMPLIFICATA = 'TD07',
+  /**
+   * nota di credito semplificata
+   */
+  NOTA_DI_CREDITO_SEMPLIFICATA = 'TD08',
+  /**
+   * nota di debito semplificata
+   */
+  NOTA_DI_DEBITO_SEMPLIFICATA = 'TD09',
 }

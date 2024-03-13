@@ -1,11 +1,12 @@
 import { TipoRitenuta } from './tipo_ritenuta';
-import { TipoDocumento } from './tipo_documento';
+import { TipoDocumentoFatturaOrdinaria } from './tipo_documento';
 import { TipoCassa } from './tipo_cassa';
-import { NaturaAliquotaZero } from './natura_aliquota_zero';
+import { TipoNaturaFatturaOrdinaria } from './tipo_natura';
 import { Sede } from './fattura_header';
 import { BaseDatiAnagrafici } from './fattura_header';
 import { TipoPagamento } from './tipo_pagamento';
 import { MetodiPagamento } from './modalita_pagamento';
+import { Allegati, DatiGeneraliDocumentoBase } from './commons_body';
 interface DatiRitenuta {
   tipoRitenuta: TipoRitenuta;
   /**
@@ -60,7 +61,7 @@ interface DatiCassaPrevidenziale {
   /**
    * nei casi di aliquota IVA pari a 0
    */
-  natura?: NaturaAliquotaZero;
+  natura?: TipoNaturaFatturaOrdinaria;
   /**
    * codice alfanumerico ai fini amministrativo-contabili
    */
@@ -84,20 +85,8 @@ interface ScontoMaggiorazione {
   importo?: number;
 }
 
-interface DatiGeneraliDocumento {
-  tipoDocumento: TipoDocumento;
-  /**
-   * codice ISO 4217 alpha-3:2001 della valuta utilizza per l'indicazione dell'importo
-   */
-  divisa: string;
-  /**
-   * date ISO 8601:2004
-   */
-  data: Date;
-  /**
-   * numero della fattura
-   */
-  numero: string;
+interface DatiGeneraliDocumento extends DatiGeneraliDocumentoBase {
+  TipoDocumentoFatturaOrdinaria: TipoDocumentoFatturaOrdinaria;
   datiRitenuta?: DatiRitenuta[];
   datiBollo?: DatiBollo;
   datiCassaPrevidenziale?: DatiCassaPrevidenziale[];
@@ -421,7 +410,7 @@ interface DettaglioLinea {
   /**
    * nei casi di aliquota IVA pari a 0
    */
-  natura?: NaturaAliquotaZero;
+  natura?: TipoNaturaFatturaOrdinaria;
   /**
    * codice alfanumerico ai fini amministrativo-contabili
    */
@@ -442,7 +431,7 @@ interface DatiRiepilogo {
   /**
    * nei casi di aliquota IVA pari a 0
    */
-  natura?: NaturaAliquotaZero;
+  natura?: TipoNaturaFatturaOrdinaria;
   /**
    * riepilogo degli importi di spese accessorie indicate nelle righe
    * di dettaglio linea tipoCessionePrestazione uguale a 'AC', tale importo
@@ -629,33 +618,6 @@ interface DatiPagamento {
    * pagamento
    */
   dettaglioPagamento: DettaglioPagamento[];
-}
-
-interface Allegati {
-  /**
-   * Nome del file allegato completo di estensione.
-   */
-  nomeAttachment: string;
-  /**
-   * L'algoritmo utilizzato per comprimere il
-   * file (ZIP, RAR etc).
-   */
-  algoritmoCompressione?: string;
-  /**
-   * Formato dell'allegato da trascrivere
-   * utilizzando la sua meglio nota estensione
-   * (pdf, html, txt).
-   */
-  formatoAttachment?: string;
-  /**
-   * Descrizione del documento allegato.
-   */
-  descrizioneAttachment?: string;
-  /**
-   * Lo valorizziamo con il file desiderato
-   * preventivamente convertito in formato base64.
-   */
-  base64Attachment: string;
 }
 
 interface FatturaElettronicaBody {

@@ -8,7 +8,6 @@ import {
   IdentificativiFiscali,
   CommonHeaders,
 } from './commons_headers';
-import { BaseDatiAnagrafici } from './fattura_header';
 import { RegimeFiscaleFatturaSemplificata } from './regime_fiscale';
 
 interface DatiTrasmissioneFatturaSemplificata extends CommonsDatiTrasmissione {
