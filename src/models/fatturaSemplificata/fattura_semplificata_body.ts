@@ -1,6 +1,6 @@
-import { Allegati, DatiGeneraliDocumentoBase } from "./commons_body";
-import { TipoDocumentoFatturaSemplificata } from "./tipo_documento";
-import { TipoNaturaFatturaSemplificata } from "./tipo_natura";
+import { Allegati, DatiGeneraliDocumentoBase } from "../commons/commons_body";
+import { TipoDocumentoFatturaSemplificata } from "../codifiche/tipo_documento";
+import { TipoNaturaFatturaSemplificata } from "../codifiche/tipo_natura";
 
 interface DatiGeneraliDocumentoFatturaSemplificata extends DatiGeneraliDocumentoBase {
        /**

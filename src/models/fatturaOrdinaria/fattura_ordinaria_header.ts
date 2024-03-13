@@ -6,8 +6,8 @@ import {
   IDFiscaleIVA,
   RappresentanteFiscaleBase,
   REA,
-} from './commons_headers';
-import { RegimeFiscaleFatturaOrdinaria } from './regime_fiscale';
+} from '../commons/commons_headers';
+import { RegimeFiscaleFatturaOrdinaria } from '../codifiche/regime_fiscale';
 
 enum FormatoTrasmissioneFatturaOrdinaria {
   /**
