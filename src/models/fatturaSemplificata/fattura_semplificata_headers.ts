@@ -7,8 +7,8 @@ import {
   REA,
   IdentificativiFiscali,
   CommonHeaders,
-} from './commons_headers';
-import { RegimeFiscaleFatturaSemplificata } from './regime_fiscale';
+} from '../commons/commons_headers';
+import { RegimeFiscaleFatturaSemplificata } from '../codifiche/regime_fiscale';
 
 interface DatiTrasmissioneFatturaSemplificata extends CommonsDatiTrasmissione {
   formatoTrasmissione: FormatoTrasmissioneFatturaSemplificata;

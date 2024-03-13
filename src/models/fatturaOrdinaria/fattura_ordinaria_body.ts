@@ -1,12 +1,12 @@
-import { TipoRitenuta } from './tipo_ritenuta';
-import { TipoDocumentoFatturaOrdinaria } from './tipo_documento';
-import { TipoCassa } from './tipo_cassa';
-import { TipoNaturaFatturaOrdinaria } from './tipo_natura';
-import { Sede } from './fattura_header';
-import { BaseDatiAnagrafici } from './fattura_header';
-import { TipoPagamento } from './tipo_pagamento';
-import { MetodiPagamento } from './modalita_pagamento';
-import { Allegati, DatiGeneraliDocumentoBase } from './commons_body';
+import { TipoRitenuta } from '../codifiche/tipo_ritenuta';
+import { TipoDocumentoFatturaOrdinaria } from '../codifiche/tipo_documento';
+import { TipoCassa } from '../codifiche/tipo_cassa';
+import { TipoNaturaFatturaOrdinaria } from '../codifiche/tipo_natura';
+import { Sede } from './fattura_ordinaria_header';
+import { BaseDatiAnagrafici } from './fattura_ordinaria_header';
+import { TipoPagamento } from '../codifiche/tipo_pagamento';
+import { MetodiPagamento } from '../codifiche/modalita_pagamento';
+import { Allegati, DatiGeneraliDocumentoBase } from '../commons/commons_body';
 interface DatiRitenuta {
   tipoRitenuta: TipoRitenuta;
   /**
